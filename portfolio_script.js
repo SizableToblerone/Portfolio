@@ -1,8 +1,8 @@
 
 
 // javascript for my three.js Portfolio
-
-init() {
-
+let scene;
+functuon init() {
+  scene = new THREE.Scene
 }
 init();
