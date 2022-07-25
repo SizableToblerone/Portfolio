@@ -1,0 +1,153 @@
+/* jacobDeck.css */
+
+:root {
+	/* overwrite these in page's CSS file to customize deck. */
+	--deckPosX: 50rem;
+	--deckPosY: 3rem;
+	--displayPosX: -30rem;
+	--displayPosY: 5rem;
+
+	--cardThickness: 1rem;
+	--cardWidth: 35rem;
+	--cardHeight: 15rem;
+
+	--peekDistance: .8rem;
+	--peekSpeed: 12rem;
+	/* scale/position/rotation of stowed cards. */
+	--scale: .5;
+	--xPos: 0rem;
+	--yPos: 0rem;
+	--xRot: 45deg;
+	--yRot: 0deg;
+	--zRot: -55deg;
+
+}
+
+.jacobDeck {
+
+	width: 5rem;
+	height: 12rem;
+	margin:
+	var(--deckPosY)
+	auto
+	50px
+	var(--deckPosX);
+
+	display: flex;
+	flex-direction: column;
+
+	transform-style: preserve-3d;
+}
+
+/* card assembly */
+.jacobCard > div {
+	/* apply to all faces */
+	position: absolute;
+	background-color: inherit;
+	box-sizing: border-box;
+}
+.front {
+	width: var(--cardWidth);
+	height: var(--cardHeight);
+	transform: translateZ(calc(var(--cardThickness)/2));
+	display: flex;
+	place-content: center;
+
+	outline: .25rem solid;
+	outline-color: inherit;
+	outline-offset: -.5rem;
+	filter: brightness(99%);
+
+}
+	.jacobCard {
+		position: relative;
+		width: var(--cardWidth);
+		height: var(--cardHeight);
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+
+		transform-style: preserve-3d;
+		transform:
+		scale(			var(--scale))
+		rotateX(		var(--xRot))
+		rotateZ(		var(--zRot))
+		translateX(	var(--xPos))
+		translateY(	var(--yPos));
+
+		transition-property: transform, offset;
+		transition-duration: 600ms;
+		transition-timing-function: ease;
+
+		offset-anchor: left top;
+		offset-rotate: 0deg;
+		offset-distance: 0%;
+	}
+	p.title {
+		place-self: center;
+		transform: rotateZ(90deg);
+
+		white-space: nowrap;
+	}
+	#centerTappedBridgeWindingWaveform p.title, #pulsatingWaveformWithLinearRipple p.title {
+		font-size: .9rem;
+	}
+
+
+
+
+.rear {
+	width: var(--cardWidth);
+	height: var(--cardHeight);
+	transform: rotateY(180deg) translateZ(calc(var(--cardThickness)/2));
+
+	background-image: url('');
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	outline: .45rem solid #ffff;
+	outline-offset: -.5rem;
+	filter: brightness(95%);
+}
+.left {
+	width: var(--cardThickness);
+	height: var(--cardHeight);
+	transform: rotateY(-90deg) translateZ(calc(var(--cardWidth)/2));
+	display: flex;
+	place-content: center;
+
+	filter: brightness(85%);
+}
+
+
+.right {
+	width: var(--cardThickness);
+	height: var(--cardHeight);
+	transform: rotateY(90deg) translateZ(calc(var(--cardWidth)/2));
+
+	filter: brightness(85%);
+}
+.top {
+	width: var(--cardWidth);
+	height: var(--cardThickness);
+	transform: rotateX(90deg) translateZ(calc(var(--cardHeight)/2));
+
+	filter: brightness(70%);
+}
+.bottom {
+	width: var(--cardWidth);
+	height: var(--cardThickness);
+	transform: rotateX(-90deg) translateZ(calc(var(--cardHeight)/2));
+
+	filter: brightness(70%);
+}
+
+/* - Appearance */
+
+/* - Interactivity */
+.jacobCard:not(.displaying):hover{
+	transition-duration: .2s;
+	--xPos: calc( -1 * var(--peekDistance) );
+}

@@ -1,0 +1,226 @@
+/* jacobSwitch.css */
+
+:root {
+	/* switch variables */
+	--switchSlideSize: 1.3rem;
+	--switchWidth: 6.6rem;
+
+	/* flipper variables */
+	--flipperRotX: 0deg;
+	--flipspeed: 200ms;
+	--bezier: cubic-bezier(.7,.18,.65,.11);
+
+	/* shared variables */
+	--backcolor: #fff;
+	--textcolor: #000;
+	--backcolorL: var(--textcolor);
+	--textcolorL: var(--textcolor);
+	--backcolorR: var(--backcolor);
+	--textcolorR: var(--textcolor);
+	--tintcolor: #0000;
+}
+
+/* JacobSwitch */
+.toJacobSwitch {
+	opacity: 0%;
+}
+.JacobSwitch {
+	display: inline-grid;
+  width: var(--switchWidth);
+	height: var(--switchSlideSize);
+  align-items: center;
+  align-self: center;
+}
+.switchChBox {
+	grid-area: 1/1;
+	z-index: 1;
+
+	opacity: 0%;
+}
+.JacobSwitch > input {
+	grid-area: 1/1;
+  width: var(--switchWidth);
+	height: var(--switchSlideSize);
+  justify-self: center;
+	margin: 0;
+	box-sizing: content-box;
+	z-index: 5;
+}
+.switchContainer {
+	grid-area: 1/1;
+  justify-self: center;
+  width: var(--switchWidth);
+	height: var(--switchSlideSize);
+  display: grid;
+  grid-auto-flow: row;
+  justify-content: center;
+  align-items: center;
+	box-sizing: content-box;
+  overflow: clip;
+
+	border: .15rem solid #ccc;
+	color: #000;
+
+	user-select: none;
+	transition: grid-template-columns .3s cubic-bezier(.84, -0.68, .22, 1.94),
+	background-color .5s,
+	outline .1s;
+}
+
+.l_left, .l_right {
+	align-self: center;
+	transform: translateY(-.35rem);
+	width: calc(var(--switchWidth) - var(--switchSlideSize));
+	height: var(--switchSlideSize);
+
+  text-align: center;
+  font-family: 'Saira';
+}
+.l_left {
+	grid-area: 1/1;
+	justify-self: end;
+
+	color: var(--textcolorL);
+	background-color: var(--backcolorL);
+}
+.l_right {
+	grid-area: 1/3;
+  justify-self: start;
+
+	color: var(--textcolorR);
+	background-color: var(--backcolorR);
+}
+.switchSlide {
+	grid-area: 1/2;
+	place-self: center center;
+	z-index: 1;
+	width: var(--switchSlideSize);
+	height: var(--switchSlideSize);
+
+	background-color: #e9e9ed;
+	border: 1px #ccc solid;
+	box-sizing: border-box;
+}
+/* Focus Highlighting */
+.switchChBox:hover ~ .switchContainer .switchSlide {
+	background-color: #d1d0d8;
+}
+
+/* Animation */
+.switchContainer {													/* switched right*/
+  grid-template-columns:
+  calc(var(--switchWidth) - var(--switchSlideSize))
+  var(--switchSlideSize)
+  .01rem;
+  background: var(--backcolorR);
+}
+.switchChBox:checked + .switchContainer { 	/* switched left*/
+	grid-template-columns:
+	.01rem
+	var(--switchSlideSize)
+	calc(var(--switchWidth) - var(--switchSlideSize));
+	background: var(--backcolorL);
+}
+@keyframes switchHandleClockwise {
+	0%{
+		rotate: 0deg;
+		border-radius: 0rem;
+		}50%{
+			border-radius: .5rem;
+			}100%{
+				rotate: .5turn;
+				border-radius: 0rem;
+				transform: translateY(-2px);
+			}
+		}
+@keyframes switchHandleCountwise {
+  0%{
+    rotate: 0deg;
+    border-radius: 0rem;
+  }50%{
+    border-radius: .5rem;
+  }100%{
+    rotate: -.5turn;
+    border-radius: 0rem;
+		transform: translateY(-2px);
+  }
+}
+
+
+/*
+* JacobFlipper
+*/
+.jacobFlipper {
+	display: grid;
+	box-sizing: border-box;
+	grid-template: var(--switchSlideSize) / var(--switchWidth);
+	transform-style: preserve-3d;
+	/* transform: rotateY(-70deg); */
+}
+.jacobFlipper > *, .jacobFlipper > * > * {
+	/* all children of the jacobFlipper share a cell */
+	grid-area: 1/1/1/1;
+	align-self: center;
+	/* box-sizing: border-box; */
+}
+.jacobFlipper > input {
+	transform: translateZ(-1rem);
+	z-index: -1;
+	width: var(--switchWidth);
+	height: var(--switchSlideSize);
+}
+.flippable {
+	display: grid;
+	transform-style: preserve-3d;
+}
+.flipFore {
+	backface-visibility: hidden;
+}
+.flipRear {
+	backface-visibility: hidden;
+	transform: rotateX(180deg);
+}
+.jacobFlipper {
+	/* background-color: #000f; */
+}
+.flippable {
+	border: .1rem solid;
+}
+.flipFore, .flipRear {
+	background-color: var(--backcolor);
+	text-align: center;
+	border: .01rem solid #000;
+	box-sizing: border-box;
+}
+.jacobFlipper > div, .jacobFlipper > div > div {
+	pointer-events: none;
+	user-select: none;
+}
+.jacobFlipper > input {
+	/* pointer-events: all; */
+	/* user-select: all; */
+}
+/* Animation */
+.flippable {
+	transition: transform var(--flipspeed) var(--bezier);
+	transform: rotateX(var(--flipperRotX));
+}
+.flipFore:before, .flipRear:before {
+	content:'-';
+	color: #0000;
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	transition: background-color var(--flipspeed) var(--bezier);
+	background-color: var(--tintcolor);
+}
+@keyframes flipdown {
+	50%{
+		transform: rotateX(180deg);
+	}100%{
+		transform: rotateX(360deg);
+	}
+}

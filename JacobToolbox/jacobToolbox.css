@@ -1,0 +1,27 @@
+/* jacobToolbox.css
+*/
+
+:root {
+	--tintspeed: 500ms;
+	--transBezier: cubic-bezier(.7,.18,.65,.11);
+	--tintcolor: #0000;
+}
+
+/* Used to flicker keyframe-based animations, causing them to replay. */
+.jaReplay {
+	animation-name: '' !important;
+}
+
+/* Used to apply a "tint" over an HTML DOM object. */
+.jaTinted:before {
+	content:'-';
+	color: #0000;
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	transition: background-color var(--tintspeed) var(--transBezier);
+	background-color: var(--tintcolor);
+}

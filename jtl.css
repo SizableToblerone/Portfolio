@@ -1,0 +1,8 @@
+/* JTL.css
+Main CSS file for the Jacob's Telescopic Ladder webspace. */
+
+.jhSignature {
+	height: 300px;
+	outline: black 6px double;
+	background: #eeed;
+}
