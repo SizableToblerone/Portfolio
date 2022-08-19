@@ -13,53 +13,26 @@
 	/* shared variables */
 	--backcolor: #fff;
 	--textcolor: #000;
-	--backcolorL: var(--textcolor);
-	--textcolorL: var(--textcolor);
-	--backcolorR: var(--backcolor);
-	--textcolorR: var(--textcolor);
 	--tintcolor: #0000;
 }
 
-/* JacobSwitch */
-.toJacobSwitch {
-	opacity: 0%;
-}
-.JacobSwitch {
+/*
+* JacobSwitch
+*/
+.jacobSwitch {
 	display: inline-grid;
-  width: var(--switchWidth);
-	height: var(--switchSlideSize);
-  align-items: center;
-  align-self: center;
-}
-.switchChBox {
-	grid-area: 1/1;
-	z-index: 1;
-
-	opacity: 0%;
-}
-.JacobSwitch > input {
-	grid-area: 1/1;
-  width: var(--switchWidth);
-	height: var(--switchSlideSize);
-  justify-self: center;
-	margin: 0;
-	box-sizing: content-box;
-	z-index: 5;
-}
-.switchContainer {
-	grid-area: 1/1;
   justify-self: center;
   width: var(--switchWidth);
-	height: var(--switchSlideSize);
-  display: grid;
+	/* height: var(--switchSlideSize); */
+	/* width: 100%; */
+	height: 100%;
   grid-auto-flow: row;
-  justify-content: center;
-  align-items: center;
 	box-sizing: content-box;
-  overflow: clip;
+  overflow-x: clip;
 
-	border: .15rem solid #ccc;
+	border: 1px solid #ccc;
 	color: #000;
+	background: #fff;
 
 	user-select: none;
 	transition: grid-template-columns .3s cubic-bezier(.84, -0.68, .22, 1.94),
@@ -67,59 +40,63 @@
 	outline .1s;
 }
 
+.jacobSwitch > input {
+	grid-area: 1/1/1/4;
+	/* width: var(--switchWidth); */
+	/* height: var(--switchSlideSize); */
+	width: 100%;
+	height: 100%;
+	place-self: center;
+	margin: 0;
+	z-index: 5;
+	pointer-events: all;
+	user-select: none;
+	opacity: 0;
+}
 .l_left, .l_right {
 	align-self: center;
-	transform: translateY(-.35rem);
 	width: calc(var(--switchWidth) - var(--switchSlideSize));
+	/* width: calc(100% - var(--switchSlideSize)); */
 	height: var(--switchSlideSize);
 
   text-align: center;
+	line-height: 1.2;
   font-family: 'Saira';
 }
 .l_left {
 	grid-area: 1/1;
 	justify-self: end;
-
-	color: var(--textcolorL);
-	background-color: var(--backcolorL);
 }
 .l_right {
 	grid-area: 1/3;
   justify-self: start;
-
-	color: var(--textcolorR);
-	background-color: var(--backcolorR);
 }
 .switchSlide {
 	grid-area: 1/2;
 	place-self: center center;
 	z-index: 1;
 	width: var(--switchSlideSize);
-	height: var(--switchSlideSize);
+	height: 100%;
 
 	background-color: #e9e9ed;
 	border: 1px #ccc solid;
 	box-sizing: border-box;
 }
-/* Focus Highlighting */
-.switchChBox:hover ~ .switchContainer .switchSlide {
-	background-color: #d1d0d8;
-}
-
-/* Animation */
-.switchContainer {													/* switched right*/
+.jacobSwitch {					/* switched right*/
   grid-template-columns:
   calc(var(--switchWidth) - var(--switchSlideSize))
   var(--switchSlideSize)
-  .01rem;
-  background: var(--backcolorR);
+  .01px;
 }
-.switchChBox:checked + .switchContainer { 	/* switched left*/
+.jacobSwitch.checked { 	/* switched left*/
 	grid-template-columns:
-	.01rem
+	.01px
 	var(--switchSlideSize)
 	calc(var(--switchWidth) - var(--switchSlideSize));
-	background: var(--backcolorL);
+}
+/* Hover Highlighting */
+.jacobSwitch:hover > .switchSlide {
+	background-color: #d1d0d8;
 }
 @keyframes switchHandleClockwise {
 	0%{
@@ -148,59 +125,60 @@
 
 
 /*
-* JacobFlipper
+* Jacob Flipper
 */
 .jacobFlipper {
-	display: grid;
+	display: inline-grid;
+	width: 100%;
+	height: 100%;
 	box-sizing: border-box;
-	grid-template: var(--switchSlideSize) / var(--switchWidth);
+
 	transform-style: preserve-3d;
-	/* transform: rotateY(-70deg); */
+
+	pointer-events: none;
+	user-select: none;
 }
-.jacobFlipper > *, .jacobFlipper > * > * {
+.jacobFlipper * {
 	/* all children of the jacobFlipper share a cell */
 	grid-area: 1/1/1/1;
+	height: 100%;
 	align-self: center;
-	/* box-sizing: border-box; */
+	white-space: pre;
 }
 .jacobFlipper > input {
 	transform: translateZ(-1rem);
 	z-index: -1;
-	width: var(--switchWidth);
-	height: var(--switchSlideSize);
+	opacity: 0;
+
+	pointer-events: all;
+	user-select: none;
+}
+.jacobFlipper > .selectable {
+	opacity: 0%;
+	user-select: text;
+	pointer-events: auto;
 }
 .flippable {
 	display: grid;
 	transform-style: preserve-3d;
 }
-.flipFore {
-	backface-visibility: hidden;
-}
-.flipRear {
-	backface-visibility: hidden;
-	transform: rotateX(180deg);
-}
-.jacobFlipper {
-	/* background-color: #000f; */
-}
-.flippable {
-	border: .1rem solid;
-}
 .flipFore, .flipRear {
+	backface-visibility: hidden;
 	background-color: var(--backcolor);
 	text-align: center;
-	border: .01rem solid #000;
 	box-sizing: border-box;
+	display: flex;
+	justify-content: center; /* align horizontal */
+	align-items: center; /* align vertical */
+	transition: background-color var(--flipspeed) var(--bezier);
 }
-.jacobFlipper > div, .jacobFlipper > div > div {
-	pointer-events: none;
-	user-select: none;
+.flipRear {
+	transform: rotateX(180deg);
 }
-.jacobFlipper > input {
-	/* pointer-events: all; */
-	/* user-select: all; */
+#text {
+	width: 100px;
 }
-/* Animation */
+
 .flippable {
 	transition: transform var(--flipspeed) var(--bezier);
 	transform: rotateX(var(--flipperRotX));
@@ -217,10 +195,116 @@
 	transition: background-color var(--flipspeed) var(--bezier);
 	background-color: var(--tintcolor);
 }
-@keyframes flipdown {
-	50%{
-		transform: rotateX(180deg);
-	}100%{
-		transform: rotateX(360deg);
+
+
+/*
+* Jacob Display Flippers
+*/
+.jacobAggregateFlipper {
+	display: inline-grid;
+	font-size: 1.5rem;
+	font-family: "Courier New";
+	grid-template-columns: repeat(64, auto);
+	place-items: center;
+}
+.jacobAggregateFlipper .jacobFlipper * * {
+	border: none !important;
+}
+.jacobAggregateFlipper .selectable {
+	width: 0;
+	z-index: 0;
+	direction: rtl;
+	color: #fff0;
+}
+
+
+/*
+new Jacob Switch
+*/
+.jacobNewSwitch > svg > path {
+	/* transition-property: d;
+	transition: d 500ms ease; */
+	animation: ease-in 900ms forwards;
+	/* animation-name: xToCircle; */
+	/* d: path('\
+		M 								 8  1 \
+		C 12  1		15  4		15  8 \
+		C 15 12		12 15 	 8 15 \
+		C  4 15 	 1 12 	 1  8 \
+		C  1  4 	 4  1 	 8  1 \
+		z'); */
+
+}
+.jacobNewSwitch > input[type=checkbox]:checked + svg > path {
+	/* d: path('\
+		M 								8 8 \
+		C 16 0		16 0		8 8 \
+		C 16 16 	16 16		8 8 \
+		C 0 16 		0 16		8 8 \
+		C 0 0 		0 0			8 8 \
+		z'); */
+	animation-name: circleToX;
+}
+
+@keyframes circleToX {
+	0%
+	{ /* circle */
+		d: path('\
+		M 								 8  1 \
+		C 12  1		15  4		15  8 \
+		C 15 12		12 15 	 8 15 \
+		C  4 15 	 1 12 	 1  8 \
+		C  1  4 	 4  1 	 8  1 \
+		z');
+	}
+	49%
+	{ /* line */
+		d: path('\
+		M 								8 8 \
+		C 12 8		15 8		15 8 \
+		C 15 8 	12 8		8 8 \
+		C 4 8 		1 8		1 8 \
+		C 1 8 		4 8			8 8 \
+		z');
+	}
+	49%
+	{ /* line */
+		d: path('\
+		M 								8 8 \
+		C 12 8		15 8		15 8 \
+		C 15 8 	12 8		8 8 \
+		C 4 8 		1 8		1 8 \
+		C 1 8 		4 8			8 8 \
+		z');
+	}
+	50%
+	{ /* line */
+		d: path('\
+		M 								8 8 \
+		C 16 8		16 8		8 8 \
+		C 16 8 	16 8		8 8 \
+		C 0 8 		0 8		8 8 \
+		C 0 8 		0 8			8 8 \
+		z');
+	}
+	50%
+	{ /* line */
+		d: path('\
+		M 								8 8 \
+		C 16 8		16 8		8 8 \
+		C 16 8 	16 8		8 8 \
+		C 0 8 		0 8		8 8 \
+		C 0 8 		0 8			8 8 \
+		z');
+	}
+	100%
+	{ /* X */
+		d: path('\
+		M 								8 8 \
+		C 16 0		16 0		8 8 \
+		C 16 16 	16 16		8 8 \
+		C 0 16 		0 16		8 8 \
+		C 0 0 		0 0			8 8 \
+		z');
 	}
 }

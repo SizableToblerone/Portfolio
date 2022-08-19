@@ -9,4 +9,8 @@ body {
 	outline: black 6px double;
 	background: #eeed;
 	margin: 3rem auto;
+
+	/* position: absolute;
+	inset: 0;
+	margin:auto; */
 }

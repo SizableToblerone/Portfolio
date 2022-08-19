@@ -21,6 +21,8 @@
 	--yRot: 0deg;
 	--zRot: -55deg;
 
+	/* verticle modifier multiplier for mobile view */
+	--mobileVertMult: 1;
 }
 
 .jacobDeck {
@@ -91,11 +93,6 @@
 
 		white-space: nowrap;
 	}
-	#centerTappedBridgeWindingWaveform p.title, #pulsatingWaveformWithLinearRipple p.title {
-		font-size: .9rem;
-	}
-
-
 
 
 .rear {

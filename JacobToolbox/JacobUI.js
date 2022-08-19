@@ -2,113 +2,279 @@
 Contents:
 	JacobSwitch
 	JacobFlipper
+	JacobAggregateFlipper
 	JacobDeck
 	JacobCard
 */
 
-/** jacobSwitch.js
-*/
+class JacobSwitch
+{
+	/**
+	* Constructor function for JacobSwitch objects, Jacob's custom.
+	* @param {string} id ID of the DOM element to replace with a switch.
+	* @param {collection} options Array of 2 strings, for the left and right text.
+	*/
+	constructor(id='', options=[])
+	{
+		this.options 			= options;
 
-/**
-* Creates an HTML element for a binary switch. To be used in conjunction with
-* the "jacobSwitch.css" stylesheet.
-* @param {string} id Id attribute of the HTML element.
-* @param {string} left Text for the left-side label.
-* @param {string} right Text for the left-side label.
-* @param {string} width Width of the html element, including CSS units.
-* @param {string} funk Any addtional HTML attributes, intended for onclick.
-* Assigned to the checkbox.
-* @param {string} backcolorL Color of the left label background.
-* @param {string} textcolorL Color of the left label text.
-* @param {string} backcolorR Color of the right label background, defaults to
-* backcolorL.
-* @param {string} textcolorR Color of the right label text, defaults to
-* textcolorL.
-* @return {string} The assembled string, to be assigned to an innerHTML value.
-*/
-// TODO: Convert to class
-function createJacobSwitch(id='MISSING', left='left', right='right',
-width='6.6rem', funk='', backcolorL='#fff', textcolorL='#000',
-backcolorR=backcolorL, textcolorR=textcolorL) {
-	$(`#${id}`).style = `--switchWidth: ${width};
-	--backcolorL: ${backcolorL};
-  --textcolorL: ${textcolorL};
-  --backcolorR: ${backcolorR};
-  --textcolorR: ${textcolorR};`
+		this.e 						= document.createElement('div');
+		this.e.id = id;
+		this.e.classList.add('jacobSwitch');
 
-	return `
-	<input type="checkbox" class="switchChBox" id="${id}ChBox" ${funk}>
-  <div class="switchContainer" >
-    <div class="l_left">${left}</div>
-    <div class="switchSlide"></div>
-    <div class="l_right"
-		style:"color:${textcolorR}; backgroundColor:${backcolorR};">
-		${right}</div>
-  </div>
-	`;
-}
+		this.checkbox 	= document.createElement('input');
+		this.checkbox.type = 'checkbox';
+		this.e.appendChild(this.checkbox);
 
 
-/**
-* Scans the document for JacobSwitches, and parses them appropriately.
-* @param {string} scanClass The CSS class to query with $$().
-* @return {number} The number of elements found bearing the given class.
-*/
-function initJacobSwitches(scanClass='toJacobSwitch') {
-	switches = $$(`.${scanClass}`);
-	for (element in switches) {
-		params = switches[element].innerHTML.split(", ");
-		switches[element].innerHTML = createJacobSwitch(switches[element].id, params[0], params[1],
-			params[2], params[3], params[4], params[5], params[6], params[7],
-		params[8]);
+		let left = document.createElement('div');
+		left.classList.add('l_left');
+		left.innerHTML = this.options[0];
+		this.e.appendChild(left);
 
-		switches[element].classList.remove('toJacobSwitch');
-		switches[element].classList.add('JacobSwitch');
+		let switchSlide = document.createElement('div');
+		switchSlide.classList.add('switchSlide');
+		this.e.appendChild(switchSlide);
+
+		let right = document.createElement('div');
+		right.classList.add('l_right');
+		right.innerHTML = this.options[1];
+		this.e.appendChild(right);
+
+
+		// change trigger
+		this.checkbox.addEventListener('change',(event)=>	{
+			return this.e.classList.toggle('checked');	});
+		// keyboard controls
+		this.checkbox.addEventListener('keydown',(event)=>
+		{
+			let k = event.keyCode;
+			/* right if down, right, S, D, J, or L; left instead
+			if also holding modifier.*/
+			if(k==40 || k==39 || k==83 || k==68 || k==74 || k==76)
+			{
+				if (event.shiftKey || event.altKey || event.ctrlKey)
+					return this.checkbox.checked = 0;
+				return this.checkbox.checked = 1;
+			}
+			// left if up, left, W, A, H, or K
+			if(k==38 || k==37 || k==87 || k==65 || k==72 || k==75)
+			{
+				if (event.shiftKey || event.altKey || event.ctrlKey)
+					return this.checkbox.checked = 1;
+				return this.checkbox.checked = 0;
+			}
+
+		});
+
+		if(id == '')
+		{
+			console.trace('%cNo ID provided.', 'color:#f77');
+			return this;
+		}
+		else if ($(`#${id}`) == null)
+		{
+			console.error(`No element with the ID #${id} exists.`);
+			return this;
+		}
+
+		if( $(`#${id}`).classList.length )
+			this.e.classList.add($(`#${id}`).classList);
+		$(`#${id}`).replaceWith(this.e);
 	}
 
-	return switches.length;
+	value() { return this.options[this.checkbox.checked*1]; }
 }
 
+class JacobNewSwitch
+{
+	/**
+	* Constructor function for JacobSwitch objects, Jacob's custom UI element.
+	* @param {string} id ID of the DOM element to replace with a switch.
+	* @param {collection} options Array of 2 strings, for the left and right text.
+	*/
+	constructor(id='', options=[])
+	{
+		this.options 			= options;
 
-/**
-* Constructor function for JacobFlipper objects.
-* @param {string} id ID of the DOM element to make a flipper for.
-* @param {string} width Width of the html element, including CSS units.
-* @param {collection} options Collection of strings .
-* @param {string} funk Any addtional HTML attributes, intended for onclick.
-* @return {string} The assembled string, to be assigned to an innerHTML value.
-*/
-// class JacobFlipper extends HTMLDivElement {
-// This code is a fucking nightmare. If you're trying to adjust it, you may
-// be better off tossing it out and building your own version.
-class JacobFlipper {
-	constructor(id, options, width='6.6rem', color='#aaf'){
+		this.e 						= document.createElement('div');
+		this.e.classList.add('jacobNewSwitch');
+
+		this.checkbox 	= document.createElement('input');
+		this.checkbox.type = 'checkbox';
+		this.e.appendChild(this.checkbox);
+
+		let switchSlide
+		 = document.createElementNS("http://www.w3.org/2000/svg",'svg');
+		switchSlide.classList.add('newSwitchSlide');
+		switchSlide.setAttribute('width', 200);
+		switchSlide.setAttribute('height', 200);
+		// switchSlide.setAttribute('viewBox', '-1 -16.5 18 18');
+		switchSlide.setAttribute('viewBox', '0 0 16 16');
+
+		switchSlide.innerHTML = `
+			<path id=test stroke=black stroke-width=1px fill=none
+			 d='
+		 		M 								 8  1 \
+		 		C 12  1		15  4		15  8 \
+		 		C 15 12		12 15 	 8 15 \
+		 		C  4 15 	 1 12 	 1  8 \
+		 		C  1  4 	 4  1 	 8  1 \
+		 		z'>
+			</path>
+		`;
+
+
+
+		this.e.appendChild(switchSlide);
+
+		// this.e.addEventListener('mousedown',()=>
+		// {
+		// 	// line
+		// 	$('#test').setAttribute('d', '\
+		// 	M 								8 8 \
+		// 	C 12 8		15 8		15 8 \
+		// 	C 15 8 	12 8		8 8 \
+		// 	C 4 8 		1 8		1 8 \
+		// 	C 1 8 		4 8			8 8 \
+		// 	z')
+		// });
+		// this.e.addEventListener('mouseup',()=>
+		// {
+		// 	// line
+		// 	$('#test').setAttribute('d', '\
+		// 	 M 								 8  1 \
+		// 	 C 12  1		15  4		15  8 \
+		// 	 C 15 12		12 15 	 8 15 \
+		// 	 C  4 15 	 1 12 	 1  8 \
+		// 	 C  1  4 	 4  1 	 8  1 \
+		// 	 z')
+		// });
+
+		// change trigger
+		// this.checkbox.addEventListener('change',(event)=>
+		// {
+		// 	if (this.checkbox.checked)
+		// 		return this.e.classList.add('checked');
+		// 	return this.e.classList.remove('checked');
+		// });
+		// // keyboard controls
+		// this.checkbox.addEventListener('keydown',(event)=>
+		// {
+		// 	let k = event.keyCode;
+		// 	/* right if down, right, S, D, J, or L; left instead
+		// 	if also holding modifier.*/
+		// 	if(k==40 || k==39 || k==83 || k==68 || k==74 || k==76)
+		// 	{
+		// 		if (event.shiftKey || event.altKey || event.ctrlKey)
+		// 			return this.checkbox.checked = 0;
+		// 		return this.checkbox.checked = 1;
+		// 	}
+		// 	// left if up, left, W, A, H, or K
+		// 	if(k==38 || k==37 || k==87 || k==65 || k==72 || k==75)
+		// 	{
+		// 		if (event.shiftKey || event.altKey || event.ctrlKey)
+		// 			return this.checkbox.checked = 1;
+		// 		return this.checkbox.checked = 0;
+		// 	}
+		//
+		// });
+
+		if(id != '') $(`#${id}`).replaceWith(this.e);
+		// if(id != '') $(`#${id}`).replaceWith(switchSlide);
+		this.e.id = id;
+	}
+
+	value() { return this.options[this.checkbox.checked*1]; }
+}
+
+class JacobFlipper
+{
+	/**
+	* Constructor function for JacobFlipper objects.
+	* @param {string} id ID of the DOM element to replace with a flipper.
+	* @param {collection} options Strings to display as selections.
+	* @param {HexGradient} colors A HexGradient object to be used to color the
+	* backgrounds for each option. No gradient if left blank.
+	*/
+	constructor(id='', options=[], colors)
+	{
 		this.options 				= options; // Collection of strings for the display.
 		this.flippableDivs	= Array.apply(null, Array(3));
 		this.textDivs				= Array.apply(null, Array(6)); // inside flippableDivs
-		this.index 					= 0;	// used for next() and prev()
+		this.index 					= 666*options.length;	// used for next() and prev()
 		this.degrees				= [-5, 0, 5];
+		this.isInput = options.length > 0;
+		this.colors = colors;
 
-		this.dom = document.createElement('div'); // dom element for the flipper
-		this.dom.id = id;
-		this.dom.classList.add('jacobFlipper');
-		this.dom.style = `--switchWidth: ${width}; --backcolor: ${color};`;
-		$(`#${id}`).replaceWith(this.dom); // put the JacobFlipper in the DOM
+		// dom element for the flipper
+		this.e = document.createElement('div');
+		this.e.id = id;
+		this.e.classList.add('jacobFlipper');
 
+		if (this.isInput)
+		{
+			this.inputEvent = new Event("input");
+			// assemble button and its control listeners
+			this.flipperButton = document.createElement('input');
+			this.flipperButton.type = 'button';
+			this.flipperButton.name = `${id}`;
+			// this.flipperButton.value = `${options[0]}`;
 
+			// next() on left click; prev() instead if also holding modifier
+			this.flipperButton.addEventListener('mouseup',(event)=>
+			{
+				if(!event.button){
+					if (event.shiftKey || event.altKey || event.ctrlKey)
+						return this.prev();
+					return this.next();
+				}
+			});
 
-		this.flipperButton = document.createElement('input');
-		this.flipperButton.type = 'button';
-		this.flipperButton.name = `${id}`;
-		this.flipperButton.value = `${options[0]}`;
-		this.flipperButton.setAttribute('onclick', `${id}.next()`);
-		this.dom.appendChild(this.flipperButton);
+			// prev() on right click
+			this.flipperButton.addEventListener('contextmenu',(event)=>
+			{
+				event.preventDefault();
+				this.prev();
+			});
 
+			// set keyboard controls
+			// keycodes:
+			// https://newbedev.com/javascript-js-keydown-codes-code-example
+			this.flipperButton.addEventListener('keydown',(event)=>
+			{
+				let k = event.keyCode;
+				/* next() if spacebar, enter, down, right, S, D, J, or L; prev() instead
+				if also holding modifier.*/
+				if(k==32 || k==13 || k==40 || k==39 || k==83 || k==68 || k==74 || k==76)
+				{
+					if (event.shiftKey || event.altKey || event.ctrlKey)
+						return this.prev();
+					return this.next();
+				}
+				// prev() if up, left, W, A, H, or K
+				if(k==38 || k==37 || k==87 || k==65 || k==72 || k==75)
+				{
+					if (event.shiftKey || event.altKey || event.ctrlKey)
+						return this.next();
+					return this.prev();
+				}
+
+			});
+			this.e.appendChild(this.flipperButton);
+		}
+		else
+		{
+			this.flipperButton = document.createElement('div');
+			this.flipperButton.name = `${id}`;
+		}
+
+		// create divs to be 3D transformed
 		for (let x = 0; x < 3; x++) {
 			this.flippableDivs[x] = document.createElement('div');
 			this.flippableDivs[x].classList.add('flippable');
 			this.flippableDivs[x].style =`--flipperRotX: ${this.degrees[x]}deg;`
-			this.dom.appendChild(this.flippableDivs[x]);
+			this.e.appendChild(this.flippableDivs[x]);
 
 			this.textDivs[2*x] = 		document.createElement('div');
 			this.textDivs[2*x+1] = 	document.createElement('div');
@@ -117,41 +283,109 @@ class JacobFlipper {
 			this.flippableDivs[x].appendChild(this.textDivs[2*x]);
 			this.flippableDivs[x].appendChild(this.textDivs[2*x+1]);
 		}
-		this.textDivs[0].innerHTML = options[0];
-		this.textDivs[4].innerHTML = options[0];
-		this.textDivs[4].style = `--tintcolor: #00000022`;
+		// this.textDivs[0].innerHTML = options[0];
+		// this.textDivs[4].innerHTML = options[0];
+		this.textDivs[0].innerHTML = '-';
+		this.textDivs[4].innerHTML = '-';
+		this.textDivs[4].style = `--tintcolor: #0002`;
+
+
+
+		if(id=='')
+			// console.trace('%cNo ID provided.', 'color:#f77');
+			return this;
+		if ($(`#${id}`)==null) {
+			console.error(`No element with the ID #${id} exists.`);
+			return this;
+		}
+
+		if( $(`#${id}`).classList.length )
+			this.e.classList.add($(`#${id}`).classList);
+
+		$(`#${id}`).replaceWith(this.e); // put the JacobFlipper in the DOM
+
+		this.prev();
+		this.next();
+		if (options.length==0) this.next('0');
 	}
 
-	next() {
+	/**
+	* Swaps input flipper to the next option. Default paramater is used for
+	* clicked inputs; Paramater is only to be passed in for non-input flippers.
+	*/
+	next(nextValue=null)
+	{
 		this.index += 1;
-		// $('#index').innerHTML = this.index;
-		// console.log(this.index);
-		let nextValue = this.options[(this.index) % this.options.length];
-		this.textDivs[this.getHiFace(this.index)].innerHTML = nextValue;
-		this.textDivs[this.getLoFace(this.index)].innerHTML = nextValue;
-		this.flipperButton.value = nextValue;
+		let size = this.options.length;
+		if (nextValue==null)
+		 nextValue = this.options[(this.index) % size];
+		let hiFace = this.textDivs[this.getHiFace(this.index)];
+		let loFace = this.textDivs[this.getLoFace(this.index)];
+		hiFace.innerHTML = nextValue;
+		loFace.innerHTML = nextValue;
+		if (this.isInput) this.flipperButton.value = nextValue;
+		// this.selectable.innerHTML = nextValue;
+		this.value = nextValue;
 
-		for (let x in this.textDivs) this.textDivs[x].style = '--tintcolor: #00000011';
-		this.textDivs[this.getHiFace(this.index - 1)].style = `--tintcolor: #000000aa`;
-		this.textDivs[this.getLoFace(this.index)].style = `--tintcolor: #00000022`;
-
+			for (let x in this.textDivs) this.textDivs[x].style =
+			 `--tintcolor: #00000005; background-color:
+			  ${this.colors?.getColor(this.index % size / size)}`;
+			this.textDivs[this.getHiFace(this.index - 1)].style =
+			 `--tintcolor: #0002;	background-color:
+			  ${this.colors?.getColor((this.index-1) % size / size)}`;
+			this.textDivs[this.getLoFace(this.index)].style =
+			 `--tintcolor: #00000015; background-color:
+			 ${this.colors?.getColor(this.index % size / size)}`
 
 		this.degrees[(this.index + 0) % 3] -= 5;
 		this.degrees[(this.index + 1) % 3] -= 5;
 		this.degrees[(this.index + 2) % 3] -= 170; // card flipping down
-		// this.textDivs[((this.index + 2) % 3)*2].style = `--tintcolor: #00000077`;
-		// this.textDivs[((this.index + 2) % 3)*2+1].style = `--tintcolor: #00000011`;
 		this.flippableDivs[0].style =`--flipperRotX: ${this.degrees[0]}deg;`;
 		this.flippableDivs[1].style =`--flipperRotX: ${this.degrees[1]}deg;`;
 		this.flippableDivs[2].style =`--flipperRotX: ${this.degrees[2]}deg;`;
+
+		this.inputEvent ? this.flipperButton.dispatchEvent(this.inputEvent):0;
+	}
+	/* Swaps input flipper to the previous option. */
+	prev(nextValue=null)
+	{
+		this.index -= 1;
+		let size = this.options.length;
+		if (nextValue==null)
+		 nextValue = this.options[(this.index) % size];
+		this.textDivs[this.getHiFace(this.index)].innerHTML = nextValue;
+		this.textDivs[this.getLoFace(this.index)].innerHTML = nextValue;
+		if (this.isInput) this.flipperButton.value = nextValue;
+		// this.selectable.innerHTML = nextValue;
+		this.value = nextValue;
+
+			for (let x in this.textDivs) this.textDivs[x].style =
+				`--tintcolor: #00000005; background-color:
+			  ${this.colors?.getColor(this.index % size / size)}`;
+			this.textDivs[this.getHiFace(this.index - 1)].style =
+				`--tintcolor: #0002;	background-color:
+			  ${this.colors?.getColor((this.index-1) % size / size)}`;
+			this.textDivs[this.getLoFace(this.index)].style =
+				`--tintcolor: #00000015; background-color:
+			 ${this.colors?.getColor(this.index % size / size)}`;
+
+
+		this.degrees[(this.index + 0) % 3] += 170; // card flipping up
+		this.degrees[(this.index + 1) % 3] += 5;
+		this.degrees[(this.index + 2) % 3] += 5;
+		this.flippableDivs[0].style =`--flipperRotX: ${this.degrees[0]}deg;`;
+		this.flippableDivs[1].style =`--flipperRotX: ${this.degrees[1]}deg;`;
 		this.flippableDivs[2].style =`--flipperRotX: ${this.degrees[2]}deg;`;
 
+		// console.log(`%ctint index:	${((this.index + 2) % 3)*2}`, 'color: #aaf');
+		// console.log(this.degrees);
+		// console.log(this.index, this.getHiFace(this.index), this.getLoFace(this.index));
 
-		// console.log(`%c${this.dom.id}.index:	${this.index}`, 'color: #aaf');
-		console.log(`%ctint index:	${((this.index + 2) % 3)*2}`, 'color: #aaf');
+		this.inputEvent ? this.flipperButton.dispatchEvent(this.inputEvent):0;
 	}
 
-	getHiFace(index) {
+	getHiFace(index)
+	{
 		switch (index % 6) {
 			case 0:
 				return 0;
@@ -167,7 +401,8 @@ class JacobFlipper {
 				return 5;
 		}
 	}
-	getLoFace(index) {
+	getLoFace(index)
+	{
 		switch (index % 6) {
 			case 0:
 				return 4;
@@ -182,14 +417,59 @@ class JacobFlipper {
 			case 5:
 				return 2;
 		}
-	}
-
-
-	value() {
-		return $(`#${this.id} input[type='button']`).value;
 	}
 }
-// console.log(`${initJacobSwitches()} JacobSwitches found`);
+
+class JacobAggregateFlipper
+{
+	/**
+	* Data display box composed of JacobFlippers, intended for numerical displays.
+	* @param {string} id The id of the DOM element to replace with an answer box.
+	* @param {number} length Number of flippers to make.
+	*/
+	constructor(id, length)
+	{
+			this.e = document.createElement('div');
+			this.e.id = id;
+			this.flippers = [];
+
+			for (let i=0; i < length; i++)
+			{
+				this.flippers[this.flippers.length] = new JacobFlipper();
+				this.e.appendChild(this.flippers[this.flippers.length-1].e);
+			}
+
+		this.selectable = document.createElement('div');
+		this.selectable.innerHTML = '0';
+		this.selectable.classList.add('selectable');
+		this.e.appendChild(this.selectable);
+
+		if( $(`#${id}`).classList.length )
+			this.e.classList = ($(`#${id}`).classList);
+		$(`#${id}`).replaceWith(this.e); // put the JacobAggregateFlipper in the DOM
+		this.display('');
+		this.e.classList.add('jacobAggregateFlipper');
+	}
+
+	/**
+	* Displays the passed number in the box.
+	* @param {string} id The id of the DOM element to replace with an answer box.
+	* @param {number} wholeDigits Number of digits to the left of the decimal.
+	* @param {number} fractionalDigits Number of digits to the right of the decimal.
+	*/
+	display(disp)
+	{
+		disp = '                                    '+disp.toString();
+		let fl = this.flippers.length-1;
+
+		for (let i=0; i <= fl; i++) {
+			if (this.flippers[fl-i].value != disp[disp.length-1-i])
+				this.flippers[fl-i].next(disp[disp.length-1-i]);
+		}
+
+		this.selectable.innerHTML = disp;
+	}
+}
 
 
 /** jacobDeck.js
@@ -199,10 +479,9 @@ class JacobDeck
 {
 /**
 * Scans the given DOM element for text that can be parsed into jacobCards, then
-* parses them appropriately.
+* parses them appropriately. This class is a DISASTER when the user mash-clicks
+* cards. I have tried so many ways to fix it.
 * @param {string} deckId The id of the DOM element to turn into a jacobDeck.
-* @param {number} deckPosX Value (px) to set as the stowed deck's left margin.
-* @param {number} deckPosY Value (px) to set as the stowed deck's top margin.
 * @param {number} displayPosX The display position's X-axis offset (px) from the
 * stowed deck.
 * @param {number} displayPosY The display position's Y-axis offset (px) from the
@@ -218,15 +497,7 @@ class JacobDeck
 		this.deckAnima			= new ExeQueue();
 		let uncardedDivs		= $$(`#${id} > div`);
 		setTimeout(()=>{
-			this.deckPosX			= cssReUnit($css(this.e,'--deckPosX'),'px',0);
-			this.deckPosY			= cssReUnit($css(this.e,'--deckPosY'),'px',0);
-			this.displayPosX	= cssReUnit($css(this.e,'--displayPosX'),'px',0);
-			this.displayPosY	= cssReUnit($css(this.e,'--displayPosY'),'px',0);
-			this.cardThickness= cssReUnit($css(':root','--cardThickness'),'px',0);
 			this.verticalModifier = (this.e.clientHeight / this.cards.length);
-			console.log(this.e.clientHeight,this.cards.length);
-
-			console.log(this.deckPosX,this.deckPosY,this.displayPosX,this.displayPosY, this.cardHeight);
 		}, 10);
 
 		// make a card for each div
@@ -237,6 +508,8 @@ class JacobDeck
       jcard.e.addEventListener('click', ()=>{this.displayCard(jcard)},
        { once: true } );
 		}
+
+		this.e.classList.add($(`#${id}`).classList);
 		// replace divs with their cards
 		$(`#${id}`).replaceWith(this.e);
 	}
@@ -252,64 +525,53 @@ class JacobDeck
 		this.stowAll();
 
 		// animate this card to the displayed position
-		// let verticalModifier = (this.e.clientHeight / this.cards.length) * card.i;
-		// let verticalModifier = this.cardThickness * card.i;
-		// console.log('verticalModifier', verticalModifier);
-
+		let displayPosX	= cssReUnit($css(this.e,'--displayPosX'),'px',0);
+		let displayPosY	= cssReUnit($css(this.e,'--displayPosY'),'px',0);
+		let mobileVertMult	= $css(this.e,'--mobileVertMult');
 		card.cardAnima.enqueue(500,()=> { // console.log('pull out card');
-			card.e.style = `
-				transition-duration: 500ms;
-				transition-timing-function: ease-in;
-				--xPos: calc( -1 * var(--peekDistance) - var(--cardWidth));
-				`;
+			$css(card.e, 'transition-duration', '500ms');
+			$css(card.e, 'transition-timing-function', 'ease-in');
+			$css(card.e, '--xPos', 'calc( -1 * var(--peekDistance) - var(--cardWidth))');
 		});
 		card.cardAnima.enqueue(1010,()=> { // console.log('pull out card');
-			card.e.style = `
-			--xPos: calc( -1 * var(--peekDistance) - var(--cardWidth));
-				transition-property: transform, offset;
-				transition-delay: 300ms, 0ms;
-				transition-duration: 700ms, 1000ms;
-				transition-timing-function:
-				cubic-bezier(.4,0,.8,.2),	cubic-bezier(.42,.84,.61,.11);
+			$css(card.e, 'transition-property', 'transform, offset');
+			$css(card.e, 'transition-delay', '300ms, 0ms');
+			$css(card.e, 'transition-duration', '700ms, 1000ms');
+			$css(card.e, 'transition-timing-function', 'cubic-bezier(.4,0,.8,.2),	cubic-bezier(.42,.84,.61,.11)');
 
-
-				offset-path: path('M 0,0 C -84,120 -300,320 \
-				${this.displayPosX},${this.displayPosY} Z');
-				offset-distance: 54%;
-
-				transform:
-				scale(1)
-				translateY(calc( var(--yPos) - ${this.verticalModifier*card.i}px ));
-				`;
+			$css(card.e, 'offset-path', `path('M 0,0 C -84,120 -300,320 \
+			${displayPosX},${displayPosY} Z')`);
+			$css(card.e, 'offset-distance', '54%');
+			$css(card.e, 'transform', `scale(1)
+			translateY(calc( var(--yPos) - ${this.verticalModifier*card.i*mobileVertMult}px ))`);
 		});
 	}
 
 	stowAll() {
-		for (let i in this.cards)
-		if (this.cards[i].e.style.offsetDistance == '54%')
-		{
+		for (let i in this.cards){
 			let card = this.cards[i];
-			let verticalModifier = (this.e.clientHeight / this.cards.length) * i;
 
-			card.cardAnima.enqueue(1300,()=> {
-				card.e.style = `
-					transition-property: transform, offset;
-					transition-delay: 0ms, 600ms;
-					transition-duration: 300ms, 700ms;
-					transition-timing-function:
-					ease-in,	cubic-bezier(.17,.84,.44,1);
+			// skip non-applicable cards
+			let offsetDistance = $css(card.e, 'offset-distance');
+			offsetDistance = offsetDistance.substr(0,offsetDistance.length-1)*1;
+			if (offsetDistance > 54 || offsetDistance == 0) continue;
 
-					transform:;
+				card.cardAnima.enqueue(1300,()=> {
+					$css(card.e, '--xPos', '0');
+					$css(card.e, 'transition-delay', '0ms, 600ms');
+					$css(card.e, 'transition-duration', '300ms, 700ms');
+					$css(card.e, 'transition-timing-function', 'ease-in,	cubic-bezier(.17,.84,.44,1)');
 
-					offset-path: path('M 0,0 C -84,120 -300,320 \
-					${this.displayPosX},${this.displayPosY-verticalModifier} Z');
-					offset-distance: 100%;`;
-			});
-			card.cardAnima.enqueue(100,()=> {
-				card.e.style = ``;
-				card.e.addEventListener('click', ()=>{ this.displayCard(card) },
-				{ once: true } );
-			});
+					$css(card.e, 'transform', '');
+					$css(card.e, 'offset-distance', '100%');
+				});
+				card.cardAnima.enqueue(100,()=> {
+					card.cardAnima.length = 0; // clears the queue;
+					card.cardAnima = new ExeQueue(); // clears the queue;
+					card.e.style = ``;
+					card.e.addEventListener('click', ()=>{ this.displayCard(card) },
+					{ once: true } );
+				});
 
 		}
 	}

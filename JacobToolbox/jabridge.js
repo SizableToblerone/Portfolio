@@ -45,7 +45,6 @@ function $css(element, property, setValue=null, important=0) {
 	return getComputedStyle(element).getPropertyValue(property);
 }
 
-
 /**
 * Converts length units from a CSS property string into a different length unit,
 * or strips the units and returns the raw value.
@@ -90,6 +89,7 @@ function cssReUnit(unconverted, targetUnit='px', suffix=1, e=':root'){
 	const lengthInPx = originalValue * pxPer[originalUnit];
 	return lengthInPx / pxPer[targetUnit]	+ (suffix ? targetUnit : 0);
 }
+
 
 /**
 * Replays an animation.
@@ -160,17 +160,18 @@ class ExeQueue extends Array {
 			return this.chainDequeue();
 		}, commandPackage.duration);
 	}
+
 }
 
 
-	/**
-	* Converts a word into partial leetspeak, so as to create valid hex codes.
-	* Some letters may take up multiple characters; Others may not have an
-	* accurate translation at all. Codes with up to 6 letters will be solid
-	* colors; 7th letters will control opacity.
-	* @param {number} duration Duration of the given command.
-	* @return {string} Hex code.
-	*/
+/**
+* Converts a word into partial leetspeak, so as to create valid hex codes.
+* Some letters may take up multiple characters; Others may not have an
+* accurate translation at all. Codes with up to 6 letters will be solid
+* colors; 7th letters will control opacity.
+* @param {number} duration Duration of the given command.
+* @return {string} Hex code.
+*/
 function wordToHex(word, includePound=false) {
 	const charKeys = {
 		'A':'A',
@@ -218,13 +219,71 @@ function wordToHex(word, includePound=false) {
 		hex += hex[hex.length-1];
 	}
 }
-// wordToHex('jacob');
-// wordToHex('stasio');
-// wordToHex('devin');
-// wordToHex('Joe');
-// wordToHex('noah');
-// wordToHex('nick');
-// wordToHex('zack');
-// wordToHex('botler');
-// wordToHex('anthony');
-// wordToHex('bige');
+
+/**
+* An object composed of any number of hex codes, capable of being queried with
+* a floating point number to return a hex color between those two points.
+* @param {string} params Hex codes.
+*/
+class HexGradient
+{
+	/**
+	* @param {string} params Hex codes.
+	*/
+	constructor(...params)
+	{
+		this.colors = [];
+		for (let x of params)
+		{
+			x = x.replace('#','');	// accepts codes with or without the pound symbol.
+			if(x.length==3) this.colors.push({
+			 r:parseInt(x[0]+x[0], 16),	// red
+			 g:parseInt(x[2]+x[2], 16),	// green
+			 b:parseInt(x[2]+x[2], 16),	// blue
+			 o:parseInt('ff', 16) });			// opacity
+			else if (x.length==4) this.colors.push({
+			 r:parseInt(x[0]+x[0], 16),
+			 g:parseInt(x[1]+x[1], 16),
+			 b:parseInt(x[2]+x[2], 16),
+			 o:parseInt(x[3]+x[3], 16) });
+			else if (x.length==6) this.colors.push({
+			 r:parseInt(x[0]+x[1], 16),
+			 g:parseInt(x[2]+x[3], 16),
+			 b:parseInt(x[4]+x[5], 16),
+			 o:parseInt('ff', 16) });
+			else if (x.length==8) this.colors.push({
+			 r:parseInt(x[0]+x[1], 16),
+			 g:parseInt(x[2]+x[3], 16),
+			 b:parseInt(x[4]+x[5], 16),
+			 o:parseInt(x[6]+x[7], 16) });
+			else return console.error('Code must be 3, 4, 6, or 8 hex symbols.');
+		}
+	}
+
+	/**
+	* @param {number} percent Percentage along the gradient to pick a color from,
+	* where 0 is the first color, 0.5 is 50% between the first and second, and 1.5
+	* is 50% between the second and third.
+	* @return {string} Hex code.
+	*/
+	getColor(pointQuery=0.5)
+	{
+		let color1 = this.colors[Math.floor(pointQuery)];
+		let color2 = this.colors[Math.ceil(pointQuery)];
+		let targetColor = [];
+		let percent = pointQuery - Math.floor(pointQuery);
+
+		targetColor.push( color1.r + percent * (color2.r-color1.r) );
+		targetColor.push( color1.g + percent * (color2.g-color1.g) );
+		targetColor.push( color1.b + percent * (color2.b-color1.b) );
+		targetColor.push( color1.o + percent * (color2.o-color1.o) );
+
+		let targetHex = '';
+		for (let x of targetColor) {
+			x = Math.round(x).toString(16);
+			x.length==1 ? x='0'+x :0;
+			targetHex += x;
+		}
+		return `#${targetHex}`;
+	}
+}
