@@ -1,0 +1,166 @@
+body {
+  display: flex;
+}
+#contextMenu {
+  position: absolute;
+	display: grid; 		/* toggles to grid */
+	grid-auto-flow: row;
+	grid-template-rows: 0px 12px;	/* SVG's row */
+	grid-auto-rows: 40px;			/* all other rows */
+
+	width: 150px;
+	z-index: 1;
+
+	place-items: center;
+	overflow: hidden;
+}
+#contextMenu svg {
+	place-self: start center;
+}
+#contextMenu a {
+  text-decoration: none;
+  color: black;
+}
+#contextMenu a::before
+{
+	content: " ";
+	width: 0px;
+	height: 2px;
+	position: absolute;
+	place-self: center;
+	z-index: 2;
+	bottom: -7px;
+	left: 50%;
+
+	background: #000;
+
+	transition-property: width, left;
+	transition-duration: 400ms;
+}
+#contextMenu a:hover::before
+{
+	content: " ";
+	width: 100%;
+	bottom: -7px;
+	left: 0%;
+
+	background: #000;
+
+	transition-property: width;
+	transition-duration: 400ms;
+}
+
+#contextMenu::before /* pre-unfurl bar */
+{
+	content: " ";
+	width: 0px;
+	height: 6px;
+	position: absolute;
+	place-self: start;
+	z-index: 2;
+	/* bottom: -7px; */
+
+	background: #000;
+
+	transition-property: width;
+	transition-duration: 300ms;
+	transition-delay: 210ms;
+}
+#contextMenu.visible::before
+{
+	width: 150px;
+	transition-delay: 0ms;
+}
+#contextMenu > * {
+	transition-property: transform;
+	transition-duration: 300ms;
+	transition-delay: 0ms;
+	transform: translateY(-200px);
+}
+#contextMenu.visible > *
+{
+	transition-duration: 300ms;
+	transition-delay: 200ms;
+	transform: translateY(0px);
+}
+/* context menu display */
+#exitDoodle {
+	display: hidden;
+}
+/* body.doodling #enterDoodle {
+	display: none;
+} */
+body.doodling #exitDoodle {
+	display: visible;
+}
+
+/* doodle mode */
+/* disable mobile scrolling */
+body.doodling, body.doodling  {
+	touch-action: none;
+}
+body.doodling * {
+	pointer-events: none;
+	user-select: none;
+}
+#doodle {
+	pointer-events: none;
+}
+body.doodling > #doodle,body.doodling > #contextMenu * {
+	pointer-events: all;
+}
+/* #doodle {
+	z-index: -5;
+}
+#doodle.doodling {
+	z-index: 5;
+	touch-action: none;
+} */
+
+
+/* inputs */
+#inputs, #CharacterSheet, #doodles {
+	width: 1052px;
+	height: 900px;
+	outline: black 6px double;
+
+	position: absolute;
+	inset: 0;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:20px;
+	margin-bottom:200px;
+
+	pointer-events: none;
+}
+input#name {
+	width: 50px;
+	height:16px;
+	top:57px;
+	left:61px;
+
+	display: none;
+}
+
+
+
+/* svg formatting */
+#defense {
+  stroke-dasharray:  120;
+  stroke-dashoffset: 120;
+	animation: draw 5s ease-out infinite;
+}
+@keyframes draw {
+	100%
+	{
+	  stroke-dashoffset: 0;
+		/* d: path("m 227.51005,24.772783 -0.10368,-0.27022 0.22153,-1.76978 c 0.12184,-0.97338 0.2433,-2.20178 0.26991,-2.72978 0.0266,-0.528 0.0573,-1.068 0.0681,-1.2 0.0366,-0.44453 -0.50171,-7.26768 -0.67747,-8.58758 l -0.17413,-1.3075802 0.11208,-0.35313 0.11208,-0.35312 -0.53734,0.1083 c -0.29555,0.0596 -0.78936,0.14526 -1.09736,0.19043 -0.308,0.0452 -0.992,0.17991 -1.52,0.29941 -0.528,0.1195 -1.44155,0.26438 -2.0301,0.32195 l -1.07009,0.10467 -0.18951,0.22832 -0.18948,0.22833 h -0.46437 -0.46437 l -0.15605,-0.41042 c -0.0858,-0.22572 -0.15603,-0.57977 -0.15603,-0.78676 v -0.37635 l 0.68,-0.25651 0.68,-0.2565 1.2,0.0609 1.2,0.0609 1.12,-0.15597 c 0.616,-0.0858 1.372,-0.25434 1.68,-0.37456 l 0.56,-0.21859 1.92,-0.24799 c 3.65374,-0.47192 4.16282,-0.55436 4.8,-0.77735 l 0.64,-0.22397 1.02818,-0.0198 1.02817,-0.0198 0.37183,0.34932 0.37182,0.34931 v 0.26643 0.26642 l -0.40741,0.18563 -0.40741,0.18563 -1.71259,0.15044 c -0.94192,0.0827 -2.21659,0.23121 -2.83259,0.32993 z"); */
+	}
+	/* 100%
+	{
+		d: path("m 0,0 -0,-0 0,-0 c 0,-0 0,-0 0,-0 0,-0 0,-0 0,-0 0,-0 -0,-0 -0,-0 l -0,-0 0,-0 0,-0 -0,0 c -0,0 -0,0 -0,0 -0,0 -0,0 -0,0 -0,0 -0,0 -0,0 l -0,0 -0,0 -0,0 h -0 -0 l -0,-0 c -0,-0 -0,-0 -0,-0 v -0 l 0,-0 0,-0 0,0 0,0 0,-0 c 0,-0 0,-0 0,-0 l 0,-0 0,-0 c 0,-0 0,-0 0,-0 l 0,-0 0,-0 0,-0 0,0 0,0 v 0 0 l -0,0 -0,0 -0,0 c -0,0 -0,0 -0,0 z");
+	} */
+}
+
+/* debug */
+/* * { outline: red 2px solid; } */
